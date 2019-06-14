@@ -12,6 +12,7 @@ const SVGWrapper = styled.div`
     width: 100vw;
     height: 50vh;
     background-color: #03BF67;
+    overflow: hidden;
 `
 
 const IconWrapper = styled.div`
@@ -19,9 +20,10 @@ const IconWrapper = styled.div`
     margin-bottom: 8px;
     margin-top: 8px;
     display: inline-block;
+    overflow: hidden;
 `
 
-// Full SVG pattern (won't animate in edge/ie, full rotate of pattern) ***OLD
+// Full SVG pattern (won't animate in edge/ie, full rotate of pattern) ***OLD***
 const FullPattern = () => {
     return (
         <SVGWrapper>
@@ -46,32 +48,6 @@ const FullPattern = () => {
     )
 }
 
-//Component to render icons
-const IconRepeat = () => {
-    // Create empty array
-    let iconList = []
-
-    // BROKEN. Fix.
-    // let iconAmount = this.calcIconAmount()
-
-    // For the amount calculated, populate array with JSX icons, needs to take iconAmount when fixed
-    for(let i = 0; i <= 256; i++) {
-        iconList.push(<box-icon key={i} type="code" name="code-alt" color="#02723E"></box-icon>)
-    }
-
-    // MAP OUT JSX with keys
-    let iconListPop = iconList.map((icon) => {
-        let wrapperKey = `wrapper-${icon.key}`
-        return <IconWrapper key={wrapperKey}>{icon}</IconWrapper>
-    })
-
-    // Return finished Mapped Array
-    return (
-        <div>
-            {iconListPop}
-        </div>
-    )
-}
 
 // Main App component (Refactor out)
 class App extends React.Component {
@@ -89,8 +65,7 @@ class App extends React.Component {
         }
     }
 
-    // LINK TO ICON REPEATER ABOVE, BROKEN
-    // Needs to calculate the amount of icons needed dependent on width and height of parent container
+    // Calculates the amount of icons needed dependent on width and height of parent container
     calcIconAmount() {
         const { dimensions } = this.state
         let iconNumWidth = dimensions.width / 44
@@ -102,14 +77,42 @@ class App extends React.Component {
         /*
         /container width / (icon width + margin)
 
-        eg 1440px / 24px + 20px = 32.72
+            eg 1440px / 24px + 20px = 32.72
 
-        container height /  (icon height + margin)
+            container height /  (icon height + margin)
 
-        eg 378.5 / 
+            eg 378.5 / 
 
         */
     }
+    
+    //Function to render icons
+    IconRepeat() {
+        // Create empty array
+        let iconList = []
+
+
+        // Set iconAmount to current sum total of parent container pixel width and height after divided by 44 (icon size including margin)
+        let iconAmount = this.calcIconAmount()
+
+        // For the amount calculated, populate array with JSX icons, needs to take iconAmount when fixed
+        for(let i = 0; i <= iconAmount; i++) {
+            iconList.push(<box-icon key={i} type="code" name="code-alt" color="#02723E"></box-icon>)
+        }
+
+        // MAP OUT JSX with keys
+        let iconListPop = iconList.map((icon) => {
+            let wrapperKey = `wrapper-${icon.key}`
+            return <IconWrapper key={wrapperKey}>{icon}</IconWrapper>
+        })
+
+        // Return finished Mapped Array
+        return (
+            <div>
+                {iconListPop}
+            </div>
+        )
+}
 
     // When it's rendered, store width and height of the parent container to state
     componentDidMount() {
@@ -143,10 +146,9 @@ class App extends React.Component {
     }
 
     render() {
-        const { dimensions } = this.state
         return(
             <SVGWrapper ref={this.container}>
-                <IconRepeat/>{this.renderContent()}
+                {this.IconRepeat()}{this.renderContent()}
             </SVGWrapper>
         )
     }
